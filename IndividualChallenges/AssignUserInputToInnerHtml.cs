@@ -1,7 +1,18 @@
 public void AssignUserInputToInnerHtml(string userInput)
 {
-    // Insecure: Assigns raw user input to InnerHtml
+    // Validate and sanitize user input
+    if (string.IsNullOrWhiteSpace(userInput))
+    {
+        Console.WriteLine("Invalid user input.");
+        return;
+    }
+
+    // Example sanitization: Encode input to prevent XSS
+    string sanitizedInput = System.Web.HttpUtility.HtmlEncode(userInput);
+
+    // Assign sanitized input to InnerHtml
     var res = new System.Web.UI.HtmlControls.HtmlGenericControl();
-    res.InnerHtml = userInput; // Vulnerable to XSS
-    Console.WriteLine("Set InnerHtml to: " + userInput);
+    res.InnerHtml = sanitizedInput;
+
+    Console.WriteLine("Set sanitized InnerHtml to: " + sanitizedInput);
 }
