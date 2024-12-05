@@ -90,8 +90,7 @@ namespace VulnerableWebAPI.Controllers
             return Ok(new
             {
                 Environment = "Debug",
-                MachineName = Environment.MachineName,
-                Uptime = Environment.TickCount
+                Status = "Service is running"
             });
         }
     }
