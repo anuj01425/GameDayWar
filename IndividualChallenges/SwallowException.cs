@@ -4,9 +4,10 @@ public void SwallowException()
     {
         DoSomething(); // This method might throw an exception
     }
-    catch
+    catch (Exception ex)
     {
         // Silently swallow the exception
+         Console.WriteLine($"Exception caught: {ex.Message}");
     }
 }
 
