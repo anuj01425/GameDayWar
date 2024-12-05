@@ -1,6 +1,9 @@
-public void AccessAdminPanel(string username)
+
+public void AccessAdminPanel(string username, string password)
 {
-    if (username == "admin") // Hardcoded username for admin
+    bool isAuthenticated = AuthenticateUser(username, password);
+
+    if (isAuthenticated && IsAdmin(username))
     {
         Console.WriteLine("Access to Admin Panel Granted!");
     }
@@ -8,4 +11,15 @@ public void AccessAdminPanel(string username)
     {
         Console.WriteLine("Access Denied.");
     }
+}
+
+private void AuthenticateUser(string username, string password)
+{
+    AuthenticateUser authenticateUser = new AuthenticateUser();
+    authenticateUser.AuthenticateUser(password);
+}
+
+private bool IsAdmin(string username)
+{
+    return username == "admin";
 }
