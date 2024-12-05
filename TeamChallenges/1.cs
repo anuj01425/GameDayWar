@@ -9,7 +9,13 @@ namespace VulnerableWebAPI.Controllers
     public class InsecureController : ApiController
     {
         // Hardcoded Database Connection String (Vulnerability #3)
-        private readonly string connectionString = "Server=myServer;Database=SensitiveDB;User Id=admin;Password=admin123;";
+        // private readonly string connectionString = "Server=myServer;Database=SensitiveDB;User Id=admin;Password=admin123;";
+        private readonly string _connectionString;
+        
+        public InsecureController(string connectionString)
+        {
+            _connectionString = connectionString;
+        }
 
         // Insecure endpoint to fetch user data
         [HttpGet]
@@ -19,15 +25,16 @@ namespace VulnerableWebAPI.Controllers
             try
             {
                 // SQL Injection Vulnerability (#1)
-                string query = $"SELECT * FROM Users WHERE UserId = '{userId}'";
+                string query = "SELECT * FROM Users WHERE UserId = @UserId";
 
-                using (SqlConnection conn = new SqlConnection(connectionString))
+                using (SqlConnection connection = new SqlConnection(connectionString))
                 {
-                    conn.Open();
-                    SqlCommand cmd = new SqlCommand(query, conn);
-                    SqlDataReader reader = cmd.ExecuteReader();
+                    SqlCommand command = new SqlCommand(query, connection);
+                    command.Parameters.AddWithValue("@UserId", userId);
 
-                    if (reader.Read())
+                    connection.Open();
+                    SqlDataReader reader = command.ExecuteReader();
+                    while (reader.Read())
                     {
                         return Ok(new
                         {
@@ -36,14 +43,16 @@ namespace VulnerableWebAPI.Controllers
                             Email = reader["Email"]
                         });
                     }
+                    reader.Close();
                 }
 
                 return NotFound();
             }
             catch (Exception ex)
             {
+                Logger.Error(ex);
                 // Improper Error Handling (#4)
-                return InternalServerError(ex);
+                return new Exception("There is an exception white fetching the user data");
             }
         }
 
